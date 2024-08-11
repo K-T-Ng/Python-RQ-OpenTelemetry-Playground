@@ -87,5 +87,13 @@ services:
     networks:
       - poc
 
+  redis:
+    image: redis:alpine3.20
+    container_name: redis
+    ports:
+      - 6379:6379
+    networks:
+      - poc
+
 networks:
   poc:
