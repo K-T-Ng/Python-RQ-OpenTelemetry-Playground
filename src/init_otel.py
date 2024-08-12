@@ -2,6 +2,7 @@
 
 import logging
 
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor, ConsoleLogExporter
 from opentelemetry.sdk.metrics import MeterProvider
@@ -18,8 +19,12 @@ from opentelemetry import _logs, metrics, trace
 def init_traces():
     """Initalize traces instrumentation"""
     provider = TracerProvider()
-    processor = BatchSpanProcessor(ConsoleSpanExporter())
-    provider.add_span_processor(processor)
+
+    console_exporter = ConsoleSpanExporter()
+    provider.add_span_processor(BatchSpanProcessor(console_exporter))
+
+    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+    provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
     trace.set_tracer_provider(provider)
 
 
