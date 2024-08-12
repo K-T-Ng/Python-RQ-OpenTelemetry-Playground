@@ -48,6 +48,7 @@ def get_logger():
 
 
 def init_otel():
+    """Initalize OpenTelemetry instrumentation"""
     init_logs()
     init_meter()
     init_traces()
