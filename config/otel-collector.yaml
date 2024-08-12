@@ -10,8 +10,10 @@ processors:
   batch:
 
 exporters:
-  otlp:
-    endpoint: otelcol:4317
+  otlp/jaeger:
+    endpoint: jaeger-collector:4317
+    tls:
+      insecure: true
 
 extensions: {}
 
@@ -21,12 +23,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp]
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlp]
-    logs:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlp]
+      exporters: [otlp/jaeger]
+    # metrics:
+    #   receivers: [otlp]
+    #   processors: [batch]
+    #   exporters: [otlp]
+    # logs:
+    #   receivers: [otlp]
+    #   processors: [batch]
+    #   exporters: [otlp]

@@ -47,8 +47,14 @@ services:
       - ES_SERVER_URLS=https://elasticsearch:9200
       - ES_TLS_ENABLED=true
       - ES_TLS_SKIP_HOST_VERIFY=true
+      - COLLECTOR_OTLP_GRPC_HOST_PORT=0.0.0.0:4317
+      - COLLECTOR_OTLP_HTTP_HOST_PORT=0.0.0.0:4318
     ports:
       - 14269:14269
+      - 11111:4317
+    expose:
+      - 4317
+      - 4318
     depends_on:
       elasticsearch:
         condition: service_healthy
