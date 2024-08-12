@@ -51,7 +51,6 @@ services:
       - COLLECTOR_OTLP_HTTP_HOST_PORT=0.0.0.0:4318
     ports:
       - 14269:14269
-      - 11111:4317
     expose:
       - 4317
       - 4318
