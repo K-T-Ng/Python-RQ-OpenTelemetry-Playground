@@ -2,6 +2,7 @@
 
 import logging
 
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor, ConsoleLogExporter
@@ -39,8 +40,13 @@ def init_meter(resource: Resource):
 def init_logs(resource: Resource):
     """Initialize logs instrumentation"""
     provider = LoggerProvider(resource=resource)
-    processor = BatchLogRecordProcessor(ConsoleLogExporter())
-    provider.add_log_record_processor(processor)
+
+    console_exporter = ConsoleLogExporter()
+    provider.add_log_record_processor(BatchLogRecordProcessor(console_exporter))
+
+    otlp_exporter = OTLPLogExporter(endpoint="http://localhost:4317", insecure=True)
+    provider.add_log_record_processor(BatchLogRecordProcessor(otlp_exporter))
+
     _logs.set_logger_provider(provider)
 
 
