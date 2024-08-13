@@ -10,7 +10,7 @@ from rq.worker import Worker
 
 from opentelemetry import _logs, trace
 
-LOGGERS = ["rq.worker"]
+LOGGERS = ["rq.job", "rq.queue", "rq.registry", "rq.worker"]
 
 
 def _inject_context_to_job_meta(job: Job):
