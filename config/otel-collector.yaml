@@ -14,11 +14,22 @@ exporters:
     endpoint: jaeger-collector:4317
     tls:
       insecure: true
+  elasticsearch/logs:
+    endpoint: https://elasticsearch:9200
+    auth:
+      authenticator: basicauth
+    tls:
+      insecure: false
+      insecure_skip_verify: true
 
-extensions: {}
+extensions:
+  basicauth:
+    client_auth:
+      username: elastic
+      password: CHANGEME
 
 service:
-  extensions: []
+  extensions: [basicauth]
   pipelines:
     traces:
       receivers: [otlp]
@@ -28,7 +39,7 @@ service:
     #   receivers: [otlp]
     #   processors: [batch]
     #   exporters: [otlp]
-    # logs:
-    #   receivers: [otlp]
-    #   processors: [batch]
-    #   exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [elasticsearch/logs]
