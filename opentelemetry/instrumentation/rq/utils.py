@@ -1,11 +1,16 @@
 """Utils for supporting PoC RQ instrumentation library"""
 
+import logging
+
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 from rq.job import Job
 from rq.queue import Queue
 from rq.worker import Worker
 
-from opentelemetry import trace
+from opentelemetry import _logs, trace
+
+LOGGERS = ["rq.worker"]
 
 
 def _inject_context_to_job_meta(job: Job):
@@ -50,3 +55,11 @@ def _trace_perform_job(func, instance, args, kwargs):
 
     trace.get_tracer_provider().force_flush()
     return response
+
+
+def _add_handler_with_provider_to_logger():
+    provider: LoggerProvider = _logs.get_logger_provider()
+    handler = LoggingHandler(level=logging.NOTSET, logger_provider=provider)
+    for name in LOGGERS:
+        logger = logging.getLogger(name)
+        logger.addHandler(handler)
