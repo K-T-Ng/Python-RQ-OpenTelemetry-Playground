@@ -10,15 +10,16 @@ from opentelemetry.sdk.metrics.export import (
     ConsoleMetricExporter,
     PeriodicExportingMetricReader,
 )
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 
 from opentelemetry import _logs, metrics, trace
 
 
-def init_traces():
+def init_traces(resource: Resource):
     """Initalize traces instrumentation"""
-    provider = TracerProvider()
+    provider = TracerProvider(resource=resource)
 
     console_exporter = ConsoleSpanExporter()
     provider.add_span_processor(BatchSpanProcessor(console_exporter))
@@ -28,16 +29,16 @@ def init_traces():
     trace.set_tracer_provider(provider)
 
 
-def init_meter():
+def init_meter(resource: Resource):
     """Initialize metric instrumentation"""
     metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter())
-    provider = MeterProvider(metric_readers=[metric_reader])
+    provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
     metrics.set_meter_provider(provider)
 
 
-def init_logs():
+def init_logs(resource: Resource):
     """Initialize logs instrumentation"""
-    provider = LoggerProvider()
+    provider = LoggerProvider(resource=resource)
     processor = BatchLogRecordProcessor(ConsoleLogExporter())
     provider.add_log_record_processor(processor)
     _logs.set_logger_provider(provider)
@@ -54,6 +55,12 @@ def get_logger():
 
 def init_otel():
     """Initalize OpenTelemetry instrumentation"""
-    init_logs()
-    init_meter()
-    init_traces()
+    resource = Resource(
+        attributes={
+            "service.name": "rq-instrumentation-playground",
+            "service.version": "0.1.0",
+        }
+    )
+    init_logs(resource)
+    init_meter(resource)
+    init_traces(resource)
