@@ -3,13 +3,13 @@
 import logging
 from typing import Optional, Tuple
 
-from opentelemetry.sdk._logs import LoggingHandler
-from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 from rq.job import Job
 from rq.queue import Queue
 from rq.worker import Worker
 
 from opentelemetry import trace
+from opentelemetry.sdk._logs import LoggingHandler
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 
 def _extract_attributes(

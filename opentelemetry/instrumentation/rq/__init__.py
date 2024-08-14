@@ -8,15 +8,13 @@ from typing import Callable, Collection, Dict, Tuple, Union
 import rq.job
 import rq.queue
 import rq.worker
-from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
-from opentelemetry.instrumentation.utils import unwrap
-from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from rq.job import Job
 from rq.queue import Queue
 from rq.worker import Worker
 from wrapt import wrap_function_wrapper
 
 from opentelemetry import _logs, trace
+from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.rq.package import _instruments
 from opentelemetry.instrumentation.rq.utils import (
     _add_handler_with_provider_to_logger,
@@ -25,6 +23,8 @@ from opentelemetry.instrumentation.rq.utils import (
     _inject_context_to_job_meta,
     _remove_handler_with_provider_from_logger,
 )
+from opentelemetry.instrumentation.utils import unwrap
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 
 LOGGERS = ("rq.job", "rq.queue", "rq.registry", "rq.worker")
 
