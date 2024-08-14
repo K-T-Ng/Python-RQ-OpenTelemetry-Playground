@@ -1,5 +1,6 @@
 """Task functions being called from RQ worker"""
 
+import logging
 import random
 import time
 from typing import Callable, List
@@ -7,17 +8,20 @@ from typing import Callable, List
 
 def print_hello_world():
     """Just print hello word"""
+    logging.info("Executing print_hello_word")
     print("Hello world")
 
 
 def print_hello_world_with_delay():
     """Delay 3 seconds and print hello world"""
+    logging.warn("Program delay due to sleeping")
     time.sleep(3)
     print_hello_world()
 
 
 def raise_error():
     """Just raise an error"""
+    logging.error("Unexpected error")
     raise Exception("Unexpected error")
 
 
