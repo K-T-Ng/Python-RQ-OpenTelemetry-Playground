@@ -7,6 +7,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=CHANGEME
     volumes:
       - ./config/grafana-datasource.yaml:/etc/grafana/provisioning/datasources/config.yaml
+      - ./config/grafana-dashboard.yaml:/etc/grafana/provisioning/dashboards/config.yaml
+      - ./config/grafana-dashboard.json:/var/lib/grafana/dashboards/rq.json
     ports:
       - 3000:3000
     networks:
