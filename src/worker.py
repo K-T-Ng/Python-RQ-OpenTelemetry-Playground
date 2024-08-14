@@ -6,13 +6,13 @@ from redis import Redis
 from rq import Queue, Worker
 
 from opentelemetry.instrumentation.rq import RQInstrumentor
-from src.init_otel import get_logger, init_otel
+from src.opentelemetry import initialize
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.NOTSET)
-    init_otel()
-    logger = get_logger()
-    RQInstrumentor().instrument()
+    initialize(
+        otlp_http_endpoint="http://localhost:4318", logger_names=("root", __name__)
+    )
 
     redis = Redis(host="localhost", port=6379)
     queue = Queue("task_queue", connection=redis)
