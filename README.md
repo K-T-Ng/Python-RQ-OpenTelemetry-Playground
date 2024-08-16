@@ -18,7 +18,9 @@ Have this need on work.
 
 ## Dependencies Version
 * Docker Version: 24.0.7
+    `https://docs.docker.com/desktop/install/windows-install/`
 * Docker Compose Plugin Version: v2.29.1-desktop.1
+    `https://docs.docker.com/compose/install/linux/#install-using-the-repository`
 
 ## Getting Started
 1. Spin up monitor stack.
@@ -55,6 +57,7 @@ Have this need on work.
     * You can open Grafana via `http://localhost:3000` in browser.
     * Access dashboard via `Home -> Dashboards -> Dashbaords -> RQ Instrumentation Playground`
     * Click one of the Trace ID, then the logs and trace detail for the given trace id will appear.
+    ![demo](./docs/demo.png)
 5. To clean all the stuffs...
     * Shut down producer and worker. `Ctrl+C` on those terminal in steps 3.
     * Shut down monitor stack by `docker compose down --remove-orphans`
