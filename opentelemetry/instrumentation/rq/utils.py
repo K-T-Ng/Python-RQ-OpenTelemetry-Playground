@@ -7,9 +7,7 @@ from rq.job import Job
 from rq.queue import Queue
 from rq.worker import Worker
 
-from opentelemetry import trace
 from opentelemetry.sdk._logs import LoggingHandler
-from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 
 def _extract_attributes(
@@ -33,14 +31,6 @@ def _extract_attributes(
         attributes["worker.name"] = worker.name
 
     return attributes
-
-
-def _inject_context_to_job_meta(job: Job):
-    TraceContextTextMapPropagator().inject(job.meta)
-
-
-def _extract_context_from_job_meta(job: Job) -> trace.Context:
-    return TraceContextTextMapPropagator().extract(carrier=job.meta)
 
 
 def _add_handler_with_provider_to_logger(

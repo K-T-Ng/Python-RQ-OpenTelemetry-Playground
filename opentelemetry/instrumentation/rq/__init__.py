@@ -19,12 +19,11 @@ from opentelemetry.instrumentation.rq.package import _instruments
 from opentelemetry.instrumentation.rq.utils import (
     _add_handler_with_provider_to_logger,
     _extract_attributes,
-    _extract_context_from_job_meta,
-    _inject_context_to_job_meta,
     _remove_handler_with_provider_from_logger,
 )
 from opentelemetry.instrumentation.utils import unwrap
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 LOGGERS = ("rq.job", "rq.queue", "rq.registry", "rq.worker")
 
@@ -39,12 +38,12 @@ def _instrument_execute(force_flush: bool = False) -> Callable:
     def _inner(func: Callable, instance: Union[Job, Worker], args: Tuple, kwargs: Dict):
         """Instrument execution function"""
         if isinstance(instance, Worker):
-            job, queue = args[0], args[1]
+            job, queue, worker = args[0], args[1], instance
         else:
-            job, queue = instance, None
+            job, queue, worker = instance, None, None
 
-        attributes: Dict = _extract_attributes(job=job, queue=queue)
-        ctx: trace.Context = _extract_context_from_job_meta(job)
+        attributes: Dict = _extract_attributes(job=job, queue=queue, worker=worker)
+        ctx: trace.Context = TraceContextTextMapPropagator().extract(carrier=job.meta)
 
         tracer = trace.get_tracer(__name__)
         with tracer.start_as_current_span(
@@ -58,7 +57,6 @@ def _instrument_execute(force_flush: bool = False) -> Callable:
         if force_flush:
             trace.get_tracer_provider().force_flush()
             _logs.get_logger_provider().force_flush()
-
         return response
 
     return _inner
@@ -76,7 +74,7 @@ def _instruement_enqueue(func: Callable, instance: Queue, args: Tuple, kwargs: D
     ) as span:
         if span.is_recording():
             span.set_attributes(attributes=attributes)
-            _inject_context_to_job_meta(job)
+            TraceContextTextMapPropagator().inject(job.meta)
         response = func(*args, **kwargs)
 
     return response
